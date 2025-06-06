@@ -27,6 +27,15 @@ const RecipeCard = ({ recipe, userId, appId, mealPlan, setMealPlan }) => {
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   const mealTimes = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
 
+  // Function to open save dialog and reset states
+  const openSaveDialog = () => {
+    setShowSaveDialog(true);
+    setSaving(false);
+    setSaveError('');
+  };
+
+
+
   // Function to get appropriate food emoji based on recipe name and ingredients
   const getFoodEmoji = (recipeName, ingredients) => {
     const name = recipeName.toLowerCase();
@@ -65,7 +74,7 @@ const RecipeCard = ({ recipe, userId, appId, mealPlan, setMealPlan }) => {
 
     try {
       const mealKey = `${selectedDay}${selectedMealTime}`;
-      
+
       // Update local state immediately for better UX
       const updatedMealPlan = {
         ...mealPlan,
@@ -82,11 +91,15 @@ const RecipeCard = ({ recipe, userId, appId, mealPlan, setMealPlan }) => {
         console.log('Firestore not available, using local state only');
       }
 
+      // Immediately close dialog and reset all states
       setShowSaveDialog(false);
+      setSaving(false);
+      setSaveError('');
+      setSaveSuccess(false);
+
     } catch (error) {
       console.error('Error saving recipe to meal plan:', error);
       setSaveError('Failed to save recipe. Please try again.');
-    } finally {
       setSaving(false);
     }
   };
@@ -195,7 +208,7 @@ const RecipeCard = ({ recipe, userId, appId, mealPlan, setMealPlan }) => {
 
           {/* Save to Meal Plan Button */}
           <BasicButton
-            onClick={() => setShowSaveDialog(true)}
+            onClick={openSaveDialog}
             className="w-full mt-4 bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 text-white font-semibold py-3 rounded-xl shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-105 border-0"
           >
             <div className="flex items-center justify-center space-x-2">
@@ -254,6 +267,7 @@ const RecipeCard = ({ recipe, userId, appId, mealPlan, setMealPlan }) => {
                 <p className="text-red-300 text-sm">{saveError}</p>
               </div>
             )}
+
           </div>
 
           <BasicDialogFooter>
@@ -268,7 +282,14 @@ const RecipeCard = ({ recipe, userId, appId, mealPlan, setMealPlan }) => {
               onClick={saveRecipeToMealPlan}
               disabled={saving}
             >
-              {saving ? 'Saving...' : 'Save Recipe'}
+              {saving ? (
+                <div className="flex items-center space-x-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                  <span>Saving...</span>
+                </div>
+              ) : (
+                'Save Recipe'
+              )}
             </BasicButton>
           </BasicDialogFooter>
         </BasicDialogContent>
