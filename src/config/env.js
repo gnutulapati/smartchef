@@ -20,7 +20,9 @@ export const APP_CONFIG = {
   appName: import.meta.env.VITE_APP_NAME || 'SmartChef',
   version: import.meta.env.VITE_APP_VERSION || '1.0.0',
   devMode: import.meta.env.VITE_DEV_MODE === 'true' || import.meta.env.DEV,
-  debugMode: import.meta.env.VITE_DEBUG_MODE === 'true'
+  debugMode: import.meta.env.VITE_DEBUG_MODE === 'true',
+  isProduction: import.meta.env.PROD,
+  baseUrl: import.meta.env.VITE_BASE_URL || (import.meta.env.PROD ? 'https://smartchef.onrender.com' : 'http://localhost:3000')
 };
 
 // Authentication Configuration
